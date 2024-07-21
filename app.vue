@@ -98,6 +98,26 @@ export default {
     },
   },
 };
+
+async function loadPyodide() {
+  if (window.pyodide) return window.pyodide;
+
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js';
+  document.body.appendChild(script);
+
+  return new Promise((resolve, reject) => {
+    script.onload = async () => {
+      try {
+        const pyodide = await window.loadPyodide();
+        resolve(pyodide);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    script.onerror = (error) => reject(error);
+  });
+}
 </script>
 
 <style>
