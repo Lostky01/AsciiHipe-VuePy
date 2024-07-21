@@ -51,40 +51,50 @@
 export default {
   data() {
     return {
-      text: '',
-      ciph_num: '',
-      result: '',
+      text: "",
+      ciph_num: "",
+      result: "",
     };
   },
   methods: {
     async convertText() {
-      const pyodide = await loadPyodide();
-      const pythonCode = `
-        def shift_cipher(text, ciph_num):
-          result = ''
-          for char in text:
-            if char.isupper():
-              result += chr((ord(char) - 65 + ciph_num) % 26 + 65)
-            elif char.islower():
-              result += chr((ord(char) - 97 + ciph_num) % 26 + 97)
-            else:
-              result += char
-          return result
+      try {
+        console.log("Converting text...");
+        const pyodide = await loadPyodide();
+        console.log("Pyodide loaded successfully");
 
-        text = '${this.text}'
-        ciph_num = ${this.ciph_num}
-        decoded_love = shift_cipher(text, ciph_num)
-        ascii_char = [ord(i) for i in decoded_love]
-        deprecated_ascii = ascii_char[0]
-        result = ''
-        for i in ascii_char:
-          if i == deprecated_ascii:
-            result += "wo ai ni " + chr(i)
-          else:
-            result += chr(i)
-        result
-      `;
-      this.result = await pyodide.runPythonAsync(pythonCode);
+        const pythonCode = `
+          def shift_cipher(text, ciph_num):
+            result = ''
+            for char in text:
+              if char.isupper():
+                result += chr((ord(char) - 65 + ciph_num) % 26 + 65)
+              elif char.islower():
+                result += chr((ord(char) - 97 + ciph_num) % 26 + 97)
+              else:
+                result += char
+            return result
+  
+          text = '${this.text}'
+          ciph_num = ${this.ciph_num}
+          decoded_love = shift_cipher(text, ciph_num)
+          ascii_char = [ord(i) for i in decoded_love]
+          deprecated_ascii = ascii_char[0]
+          result = ''
+          for i in ascii_char:
+            if i == deprecated_ascii:
+              result += "wo ai ni " + chr(i)
+            else:
+              result += chr(i)
+          result
+        `;
+
+        console.log("Running Python code...");
+        this.result = await pyodide.runPythonAsync(pythonCode);
+        console.log("Python code executed successfully");
+      } catch (error) {
+        console.error("Error during text conversion:", error);
+      }
     },
   },
 };
@@ -92,19 +102,23 @@ export default {
 
 <style>
 @import url("https://fonts.cdnfonts.com/css/unbounded");
+input.form-control {
+  background-color: rgb(82, 80, 80) !important;
+  border: 0 !important;
+}
 label {
   color: white !important;
   font-family: "Unbounded", sans-serif;
 }
 h1 {
   font-family: "Unbounded", sans-serif;
-  color: white;
+  color: white !important;
 }
 body {
-  background-color: rgb(82, 80, 80);
+  background-color: rgb(82, 80, 80) !important;
 }
 .container {
   border-radius: 20px;
-  background-color: rgb(55, 55, 55);
+  background-color: rgb(55, 55, 55) !important;
 }
 </style>
